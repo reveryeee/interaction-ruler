@@ -27,3 +27,20 @@ History → Scene Encoder (agent encoder + lane encoder) → Query → Trajector
 
 ## 8. HPNet — Tang et al., "Dynamic Trajectory Forecasting with Historical Prediction Attention," CVPR 2024 — arXiv 2404.06351 (Attention在history prediction上,每一段prediction的attention weight是不一样的)
 History → Prediction → Prediction History → Attention → New Prediction （State（z）应该表示："当前预测演化到了什么阶段（Prediction State）"。 假如我们要走RSSM(注意RSSM自己本身是不带memory的，要像HPNet这样的话那就一定要加其他组件)或者其他world model范式，那么照猫画虎可以架构成为History → Latent state → Latent state History → Attention → New Latent state。 但其实这只是及格线，具体挖掘1. Memory里面到底存什么，2. 能把“为什么过去某一个latent应该比另一个latent更重要”才是好的）
+
+失败case1: 突然Cut-in。模型还是预测直行。 因为：Prediction History一直告诉它直行，于是Memory反而成为惯性。
+失败case2: 突然Emergency Brake。Prediction更新来不及。因为Memory里面全都是高速巡航。
+失败case3: 多人交互。例如五辆车同时互相让行。Prediction History其实已经不足以表达复杂交互.
+
+
+QCNet和HPNet都只追求了纯预测能力，但是不知道是不是真的理解了概念、因果关系和推理过程。 这就是world model要主攻的方向，即学习一个能够预测未来的 Latent State甚至能够把State Semantics破译出来让我们能看得懂 （可观测场景
+位置、速度、朝向、周围车辆、地图 (observation) → Encoder → latent state sₜ → Dynamics → future latent state sₜ₊₁ → Trajectory Decoder → 未来轨迹。  即： 模型根据可观测交通场景推断内部潜状态，再用动力学模型把它向未来rollout，最后从未来潜状态解码出轨迹。   但前提是假如world model范式在ADE/FDE等指标上无法超过这些SOTA，那么我们要在其他部分做出贡献，比如多步rollout更稳定，对扰动和反事实更合理，少量数据下更有效，Latent可解释、可诊断等等）
+<img width="396" height="555" alt="image" src="https://github.com/user-attachments/assets/0f0e6696-b697-499a-8d45-05fc237868b0" />
+
+
+## 9.  Forecast-MAE — Cheng, Mei, Liu, ICCV 2023 ()
+
+
+## 10. MTR
+
+## 11. HiVT
